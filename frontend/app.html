@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SummAI — Summarizer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="nav-logo">Summ<em>AI</em></span>
+    <span class="nav-badge">Beta</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-user-chip" id="navUser">
+      <span class="nav-avatar" id="navAvatar">U</span>
+      <span id="navUserName">User</span>
+    </div>
+    <button class="nav-btn" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<main class="app-main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">✦ AI-Powered Summarization</div>
+    <h2 class="hero-title">Summarize <em>Anything</em></h2>
+    <p class="hero-sub">Text · Voice · Image · YouTube &nbsp;·&nbsp; English, हिंदी, मराठी</p>
+  </div>
+
+  <!-- INPUT CARD -->
+  <div class="app-card">
+    <div class="input-tabs">
+      <button class="itab active" onclick="switchInputTab('text',this)">📝 Text</button>
+      <button class="itab" onclick="switchInputTab('voice',this)">🎙️ Voice</button>
+      <button class="itab" onclick="switchInputTab('image',this)">🖼️ Image</button>
+      <button class="itab" onclick="switchInputTab('video',this)">▶️ YouTube</button>
+    </div>
+
+    <!-- TEXT PANEL -->
+    <div class="input-panel active" id="panel-text">
+      <div class="text-input-area">
+        <textarea id="inputText" placeholder="Paste or type your text here in English, हिंदी, or मराठी..." oninput="onTextInput()"></textarea>
+        <div class="text-meta">
+          <span id="charCount">0 characters</span>
+          <span class="detected-lang" id="detectedLang">Language: —</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- VOICE PANEL -->
+    <div class="input-panel" id="panel-voice">
+      <!-- Voice sub-tabs -->
+      <div class="voice-subtabs">
+        <button class="vstab active" id="vstab-live" onclick="switchVoiceMode('live',this)">🎙️ Live Recording</button>
+        <button class="vstab" id="vstab-note" onclick="switchVoiceMode('note',this)">📎 Upload Voice Note</button>
+      </div>
+
+      <!-- LIVE RECORDING sub-panel -->
+      <div class="voice-subpanel active" id="vpanel-live">
+        <div class="voice-area">
+          <div class="voice-icon" id="voiceIcon">🎙️</div>
+          <div class="voice-status" id="voiceStatus">Press the button to start recording</div>
+          <div class="voice-lang-select">
+            <span>Recording language:</span>
+            <select id="voiceLang">
+              <option value="en-IN">English (India)</option>
+              <option value="hi-IN">हिंदी</option>
+              <option value="mr-IN">मराठी</option>
+            </select>
+          </div>
+          <button class="record-btn" id="recordBtn" onclick="toggleRecording()">Start Recording</button>
+          <div id="voiceTranscriptWrap" style="width:100%;display:none">
+            <div class="section-label">Transcribed text:</div>
+            <div class="voice-transcript" id="voiceTranscript"></div>
+            <div class="text-meta" style="margin-top:8px">
+              <span id="voiceCharCount">0 characters</span>
+              <span class="detected-lang" id="voiceDetectedLang">Language: —</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPLOAD VOICE NOTE sub-panel -->
+      <div class="voice-subpanel" id="vpanel-note">
+        <div class="voice-area">
+          <div class="upload-area" id="audioDropZone" onclick="document.getElementById('audioFileInput').click()" ondragover="onAudioDragOver(event)" ondrop="onAudioDrop(event)">
+            <div class="upload-icon">🎵</div>
+            <div class="upload-title">Upload or Drop a Voice Note</div>
+            <div class="upload-hint">MP3, WAV, M4A, OGG, WEBM, AAC, FLAC & more · Max 25MB · Transcribed via Whisper AI</div>
+          </div>
+          <input type="file" id="audioFileInput" accept="audio/*,.mp3,.wav,.m4a,.ogg,.webm,.aac,.flac,.wma,.aiff,.opus,.amr,.3gp,.caf" style="display:none" onchange="onAudioSelect(event)"/>
+
+          <!-- Selected file info -->
+          <div id="audioFileInfo" style="display:none;width:100%">
+            <div class="audio-file-chip">
+              <span class="audio-file-icon">🎵</span>
+              <span id="audioFileName" class="audio-file-name">audio.mp3</span>
+              <span id="audioFileSize" class="audio-file-size">0 KB</span>
+              <button class="audio-clear-btn" onclick="clearAudioFile()">✕</button>
+            </div>
+            <audio id="audioPreviewPlayer" controls style="width:100%;margin-top:10px;border-radius:10px;"></audio>
+          </div>
+
+          <!-- Language + Transcribe button -->
+          <div id="audioTranscribeWrap" style="display:none;width:100%;text-align:center">
+            <div class="voice-lang-select" style="justify-content:center;margin-bottom:12px">
+              <span>Audio language:</span>
+              <select id="audioLang">
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                <option value="mr">मराठी</option>
+                <option value="">Auto-detect</option>
+              </select>
+            </div>
+            <button class="record-btn" id="transcribeBtn" onclick="transcribeAudio()">
+              <span id="transcribeBtnText">🔤 Transcribe Audio</span>
+            </button>
+          </div>
+
+          <!-- Transcription result -->
+          <div id="audioTranscriptWrap" style="width:100%;display:none">
+            <div class="section-label">Transcribed text:</div>
+            <div class="voice-transcript" id="audioTranscript"></div>
+            <div class="text-meta" style="margin-top:8px">
+              <span id="audioCharCount">0 characters</span>
+              <span class="detected-lang" id="audioDetectedLang">Language: —</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IMAGE OCR PANEL -->
+    <div class="input-panel" id="panel-image">
+      <div class="upload-area" id="imageDropZone" onclick="document.getElementById('imageFileInput').click()" ondragover="onDragOver(event)" ondrop="onImageDrop(event)">
+        <div class="upload-icon">🖼️</div>
+        <div class="upload-title">Upload or Drop an Image</div>
+        <div class="upload-hint">PNG, JPG, WEBP · Max 5MB · Text extracted via AI OCR</div>
+      </div>
+      <input type="file" id="imageFileInput" accept="image/*" style="display:none" onchange="onImageSelect(event)"/>
+      <div class="preview-area" id="imagePreview" style="display:none">
+        <img id="previewImg" src="" alt="Preview"/>
+      </div>
+      <div id="ocrResultWrap" style="display:none;margin-top:16px">
+        <div class="section-label">Extracted text:</div>
+        <div class="voice-transcript" id="ocrText"></div>
+        <div class="text-meta" style="margin-top:8px">
+          <span id="ocrCharCount">0 characters</span>
+          <span class="detected-lang" id="ocrDetectedLang">Language: —</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDEO / YOUTUBE PANEL -->
+    <div class="input-panel" id="panel-video">
+      <div class="video-area">
+        <div class="url-info-box yt-info">
+          <span class="url-info-icon">▶️</span>
+          <div>
+            <strong>Summarize YouTube videos</strong>
+            <p>Paste a YouTube URL — we'll extract the transcript and summarize it for you.</p>
+          </div>
+        </div>
+
+        <!-- YouTube URL input -->
+        <div class="url-input-row">
+          <input type="url" id="ytUrlInput" placeholder="https://youtube.com/watch?v=..." oninput="onYtUrlInput()"/>
+          <button class="btn-fetch yt-btn" onclick="fetchYouTube()">Get Transcript →</button>
+        </div>
+
+        <!-- Video thumbnail preview -->
+        <div id="ytThumbWrap" style="display:none;margin-top:12px;text-align:center">
+          <img id="ytThumb" src="" alt="Video thumbnail" style="max-width:100%;max-height:180px;border-radius:10px;object-fit:cover;border:2px solid var(--border,#e5e7eb)"/>
+          <div id="ytVideoTitle" style="margin-top:6px;font-size:0.85rem;font-weight:600;color:var(--text-secondary,#6b7280);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+        </div>
+
+        <div class="yt-divider"><span>— or paste transcript manually —</span></div>
+
+        <!-- Manual transcript paste -->
+        <div class="text-input-area">
+          <textarea id="videoTranscript" placeholder="If auto-fetch fails: download subtitles from your YouTube video and paste the text here..." rows="5" oninput="onVideoInput()"></textarea>
+          <div class="text-meta">
+            <span id="videoCharCount">0 characters</span>
+            <span class="detected-lang" id="videoDetectedLang">Language: —</span>
+          </div>
+        </div>
+
+        <div id="ytStatusWrap" style="display:none" class="yt-status-box">
+          <span id="ytStatusIcon">⏳</span>
+          <span id="ytStatusMsg">Fetching transcript...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTIONS CARD -->
+  <div class="app-card options-card">
+    <div class="options-row">
+      <div class="option-group">
+        <label class="option-label">Summary Length</label>
+        <div class="toggle-group" id="lengthToggle">
+          <button class="tog active" onclick="setLength('short',this)">Short</button>
+          <button class="tog" onclick="setLength('medium',this)">Medium</button>
+          <button class="tog" onclick="setLength('long',this)">Long</button>
+        </div>
+      </div>
+      <div class="option-group">
+        <label class="option-label">Output Language</label>
+        <div class="toggle-group" id="outputLangToggle">
+          <button class="tog active" onclick="setOutLang('auto',this)">Auto</button>
+          <button class="tog" onclick="setOutLang('english',this)">English</button>
+          <button class="tog" onclick="setOutLang('hindi',this)">हिंदी</button>
+          <button class="tog" onclick="setOutLang('marathi',this)">मराठी</button>
+        </div>
+      </div>
+    </div>
+    <div class="action-row">
+      <button class="btn-clear" onclick="clearAll()">✕ Clear</button>
+      <button class="btn-summarize" id="summarizeBtn" onclick="summarize()">
+        <span id="btnText">✨ Summarize</span>
+        <span id="btnLoader" class="hidden"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- OUTPUT CARD -->
+  <div class="app-card output-card hidden" id="outputSection">
+    <div class="output-header">
+      <h3 class="output-title">Summary</h3>
+      <div class="output-pills">
+        <span class="pill" id="outLangPill">Language: —</span>
+        <span class="pill" id="outLengthPill">Length: —</span>
+        <span class="pill" id="outWordsPill">— words</span>
+        <span class="pill" id="outSourcePill">Source: Text</span>
+      </div>
+    </div>
+    <div class="output-box" id="outputBox"></div>
+    <div class="output-actions">
+      <button class="icon-btn" onclick="copyOutput()">📋 Copy</button>
+      <button class="icon-btn" onclick="downloadOutput()">⬇️ Download</button>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="db.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

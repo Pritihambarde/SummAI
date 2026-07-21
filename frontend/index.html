@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SummAI — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #faf7f2;
+    --card: #ffffff;
+    --border: #e8e0d5;
+    --ink: #1a1008;
+    --muted: #8a7d6b;
+    --accent: #e8502a;
+    --accent2: #3b82f6;
+    --accent3: #059669;
+    --accent4: #7c3aed;
+    --yellow: #fbbf24;
+    --pink: #f472b6;
+    --danger: #dc2626;
+    --success: #059669;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  body {
+    background: var(--bg);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Geometric background pattern */
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .geo-shape {
+    position: absolute;
+    border-radius: 50%;
+  }
+  .geo1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, #fde68a55 0%, transparent 70%);
+    top: -200px; right: -100px;
+    animation: drift1 12s ease-in-out infinite;
+  }
+  .geo2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #fbcfe855 0%, transparent 70%);
+    bottom: -150px; left: -100px;
+    animation: drift2 15s ease-in-out infinite;
+  }
+  .geo3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, #bfdbfe55 0%, transparent 70%);
+    top: 40%; left: 55%;
+    animation: drift3 10s ease-in-out infinite;
+  }
+  @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,20px)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-25px)} }
+  @keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-15px,15px)} }
+
+  /* Dot grid */
+  .dot-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image: radial-gradient(circle, #c4a882 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.25;
+  }
+
+  /* Decorative corner elements */
+  .corner-tl, .corner-br {
+    position: fixed;
+    z-index: 0;
+  }
+  .corner-tl {
+    top: 20px; left: 20px;
+    width: 120px; height: 120px;
+    border-top: 3px solid var(--accent);
+    border-left: 3px solid var(--accent);
+  }
+  .corner-br {
+    bottom: 20px; right: 20px;
+    width: 120px; height: 120px;
+    border-bottom: 3px solid var(--accent4);
+    border-right: 3px solid var(--accent4);
+  }
+
+  /* Floating pill labels */
+  .float-pill {
+    position: fixed;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 100px;
+    z-index: 0;
+    opacity: 0.7;
+  }
+  .fp1 {
+    top: 40px; left: 50%;
+    background: var(--yellow);
+    color: #78350f;
+    transform: translateX(-50%) rotate(-2deg);
+    animation: wobble 4s ease-in-out infinite;
+  }
+  .fp2 {
+    bottom: 80px; right: 5%;
+    background: var(--pink);
+    color: #831843;
+    transform: rotate(3deg);
+    animation: wobble 5s ease-in-out infinite 1s;
+  }
+  .fp3 {
+    top: 35%; left: 3%;
+    background: #a7f3d0;
+    color: #065f46;
+    transform: rotate(-4deg);
+    animation: wobble 6s ease-in-out infinite 2s;
+  }
+  @keyframes wobble {
+    0%,100%{transform:rotate(-2deg) translateY(0)}
+    50%{transform:rotate(-2deg) translateY(-6px)}
+  }
+
+  /* Main layout */
+  .auth-wrap {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 900px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: 580px;
+    box-shadow: 0 30px 80px rgba(26,16,8,0.15), 0 0 0 1px var(--border);
+    border-radius: 28px;
+    overflow: hidden;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes popIn {
+    from{opacity:0;transform:scale(0.9) translateY(20px)}
+    to{opacity:1;transform:scale(1) translateY(0)}
+  }
+
+  /* Left brand panel */
+  .brand-panel {
+    background: var(--ink);
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .brand-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 80%, #e8502a33 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, #7c3aed33 0%, transparent 50%);
+  }
+  .brand-inner { position: relative; z-index: 1; }
+  
+  .brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fbbf24;
+    margin-bottom: 28px;
+  }
+  .brand-badge span { width: 6px; height: 6px; background: #fbbf24; border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+  .brand-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 4rem;
+    font-weight: 700;
+    color: #faf7f2;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .brand-logo em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .brand-tagline {
+    font-size: 0.9rem;
+    color: rgba(250,247,242,0.5);
+    line-height: 1.6;
+    margin-bottom: 40px;
+  }
+
+  .features-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .features-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.88rem;
+    color: rgba(250,247,242,0.75);
+  }
+  .feat-icon {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .fi-orange { background: #e8502a22; border: 1px solid #e8502a44; }
+  .fi-blue   { background: #3b82f622; border: 1px solid #3b82f644; }
+  .fi-green  { background: #05966922; border: 1px solid #05966944; }
+
+  .lang-row {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 32px;
+  }
+  .lang-chip {
+    padding: 5px 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px;
+    font-size: 0.75rem;
+    color: rgba(250,247,242,0.6);
+  }
+
+  /* Right form panel */
+  .form-panel-wrap {
+    background: var(--card);
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 5px;
+    margin-bottom: 32px;
+    border: 1.5px solid var(--border);
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 11px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.3px;
+  }
+  .tab-btn.active {
+    background: var(--ink);
+    color: var(--bg);
+    box-shadow: 0 4px 14px rgba(26,16,8,0.2);
+  }
+
+  .form-panel { display: none; }
+  .form-panel.active { display: block; animation: slideUp 0.3s ease; }
+  @keyframes slideUp { from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)} }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 7px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .field label .lbl-icon { font-size: 0.9rem; }
+  .field input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.93rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .field input::placeholder { color: #c4a882; }
+  .field input:focus {
+    border-color: var(--ink);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(26,16,8,0.06);
+  }
+  .field input.error { border-color: var(--danger); background: #fff5f5; }
+
+  .field-error {
+    font-size: 0.77rem;
+    color: var(--danger);
+    margin-top: 5px;
+    display: none;
+    font-weight: 500;
+  }
+  .field-error.show { display: block; }
+
+  .hint {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 5px;
+  }
+
+  .pass-wrap { position: relative; }
+  .pass-wrap input { padding-right: 46px; }
+  .pass-toggle {
+    position: absolute;
+    right: 14px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none;
+    color: var(--muted); cursor: pointer;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+  }
+  .pass-toggle:hover { color: var(--ink); }
+
+  .strength-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--border);
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .strength-fill { height: 100%; width: 0; border-radius: 2px; transition: all 0.3s; }
+
+  .forgot-link {
+    display: block;
+    text-align: right;
+    font-size: 0.82rem;
+    color: var(--accent);
+    text-decoration: none;
+    margin-top: -4px;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  .forgot-link:hover { text-decoration: underline; }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: var(--ink);
+    border: none;
+    border-radius: 12px;
+    color: var(--bg);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent4) 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .btn-primary:hover::after { opacity: 1; }
+  .btn-primary span { position: relative; z-index: 1; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(26,16,8,0.25); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 24px; right: 24px;
+    background: var(--ink);
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-size: 0.88rem;
+    color: var(--bg);
+    box-shadow: 0 8px 32px rgba(26,16,8,0.3);
+    transform: translateX(200%);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 300px;
+  }
+  .toast.show { transform: translateX(0); }
+  .toast.success { border-left: 4px solid var(--success); }
+  .toast.danger  { border-left: 4px solid var(--danger); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,16,8,0.6);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 24px;
+    padding: 36px;
+    width: 100%;
+    max-width: 420px;
+    margin: 20px;
+    animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .modal h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+  }
+  .modal p { color: var(--muted); font-size: 0.88rem; margin-bottom: 24px; }
+  .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+  .btn-ghost {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--ink); }
+
+  @media (max-width: 680px) {
+    .auth-wrap { grid-template-columns: 1fr; max-width: 460px; }
+    .brand-panel { padding: 32px 28px; min-height: auto; }
+    .features-list { display: none; }
+    .form-panel-wrap { padding: 32px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-canvas">
+  <div class="geo-shape geo1"></div>
+  <div class="geo-shape geo2"></div>
+  <div class="geo-shape geo3"></div>
+</div>
+<div class="dot-grid"></div>
+<div class="corner-tl"></div>
+<div class="corner-br"></div>
+<div class="float-pill fp1">✦ AI Powered</div>
+<div class="float-pill fp2">✦ Multilingual</div>
+<div class="float-pill fp3">✦ Smart Summaries</div>
+
+<div class="auth-wrap">
+  <!-- Left: Brand panel -->
+  <div class="brand-panel">
+    <div class="brand-inner">
+      <div class="brand-badge"><span></span> Now with Hindi & Marathi</div>
+      <div class="brand-logo">Summ<em>AI</em></div>
+      <p class="brand-tagline">Intelligent text summarization for the multilingual world.</p>
+      <ul class="features-list">
+        <li>
+          <div class="feat-icon fi-orange">✦</div>
+          Summarize any text instantly
+        </li>
+        <li>
+          <div class="feat-icon fi-blue">⚡</div>
+          Supports English, हिंदी & मराठी
+        </li>
+        <li>
+          <div class="feat-icon fi-green">🔒</div>
+          Private & secure — your data stays yours
+        </li>
+      </ul>
+    </div>
+    <div class="lang-row">
+      <span class="lang-chip">🇮🇳 English</span>
+      <span class="lang-chip">हिंदी</span>
+      <span class="lang-chip">मराठी</span>
+    </div>
+  </div>
+
+  <!-- Right: Form panel -->
+  <div class="form-panel-wrap">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginPanel" class="form-panel active">
+      <div class="field">
+        <label><span class="lbl-icon">✉</span> Email</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com" autocapitalize="none" autocorrect="off" autocomplete="email" spellcheck="false" oninput="clearErr(this)" onblur="validateEmailField('loginEmail','loginEmailErr')"/>
+        <div class="field-error" id="loginEmailErr"></div>
+      </div>
+      <div class="field">
+        <label><span class="lbl-icon">🔑</span> Password</label>
+        <div class="pass-wrap">
+          <input type="password" id="loginPass" placeholder="Enter your password" oninput="clearErr(this)"/>
+          <button class="pass-toggle" onclick="togglePass('loginPass',this)" type="button">👁</button>
+        </div>
+        <div class="field-error" id="loginPassErr"></div>
+      </div>
+      <a href="#" class="forgot-link" onclick="openForgot(event)">Forgot password?</a>
+      <button class="btn-primary" onclick="doLogin()" id="loginBtn"><span>Sign In →</span></button>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="signupPanel" class="form-panel">
+      <div class="field">
+        <label><span class="lbl-icon">👤</span> Full Name</label>
+        <input type="text" id="signupName" placeholder="Letters only (no numbers)" oninput="clearErr(this)"/>
+        <div class="field-error" id="signupNameErr"></div>
+      </div>
+      <div class="field">
+        <label><span class="lbl-icon">✉</span> Email</label>
+        <input type="email" id="signupEmail" placeholder="you@example.com" autocapitalize="none" autocorrect="off" autocomplete="email" spellcheck="false" oninput="clearErr(this)" onblur="validateEmailField('signupEmail','signupEmailErr')"/>
+        <div class="field-error" id="signupEmailErr"></div>
+      </div>
+      <div class="field">
+        <label><span class="lbl-icon">🔑</span> Password</label>
+        <div class="pass-wrap">
+          <input type="password" id="signupPass" placeholder="Min 5 chars, 1 symbol, 2 digits" oninput="clearErr(this);checkStrength(this.value)"/>
+          <button class="pass-toggle" onclick="togglePass('signupPass',this)" type="button">👁</button>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+        <div class="hint">≥5 characters · 1 special symbol (!@#$%) · 2 digits</div>
+        <div class="field-error" id="signupPassErr"></div>
+      </div>
+      <div class="field">
+        <label><span class="lbl-icon">🔑</span> Confirm Password</label>
+        <div class="pass-wrap">
+          <input type="password" id="signupPass2" placeholder="Repeat password" oninput="clearErr(this)"/>
+          <button class="pass-toggle" onclick="togglePass('signupPass2',this)" type="button">👁</button>
+        </div>
+        <div class="field-error" id="signupPass2Err"></div>
+      </div>
+      <button class="btn-primary" onclick="doSignup()" id="signupBtn"><span>Create Account →</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="modal-overlay" id="forgotModal">
+  <div class="modal">
+    <h3>Reset Password</h3>
+    <p>Enter your registered email and we'll generate a temporary password.</p>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="forgotEmail" placeholder="you@example.com" autocapitalize="none" autocorrect="off" spellcheck="false"/>
+      <div class="field-error" id="forgotEmailErr"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeForgot()">Cancel</button>
+      <button class="btn-primary" style="flex:1" onclick="doForgot()"><span>Reset →</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="db.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>
