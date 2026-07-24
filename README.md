@@ -70,3 +70,20 @@ Open `frontend/index.html` directly in your browser (double-click it, or drag it
 - Passwords are hashed with bcrypt before being stored, and are never returned in API responses.
 - The MongoDB connection string is loaded from an environment variable (`.env`, not committed to the repo) rather than being hardcoded, to keep database credentials private.
 - Future improvements: JWT-based sessions instead of client-side session storage, and deploying the backend so the app works without running a local server.
+
+- ## Getting Started
+
+1. Clone the repo
+   \`\`\`bash
+   git clone https://github.com/Pritihambarde/SummAI.git
+   \`\`\`
+2. Install backend dependencies
+   \`\`\`bash
+   cd backend && npm install
+   \`\`\`
+3. Add your MongoDB connection string in a `.env` file
+4. Start the server
+   \`\`\`bash
+   npm start
+   \`\`\`
+5. Open `frontend/index.html` in your browser
